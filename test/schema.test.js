@@ -2594,4 +2594,14 @@ describe('schema', function() {
     assert.equal(testSchema.path('doesntpopulate.$').options.ref, 'features');
     assert.equal(testSchema.path('populatescorrectly.$').options.ref, 'features');
   });
+
+  it('disallows setting special properties with `add()` or constructor (gh-12085)', async function() {
+    const maliciousPayload = '{"__proto__.toString": "Number"}';
+
+    assert.throws(() => {
+      mongoose.Schema(JSON.parse(maliciousPayload));
+    }, /__proto__/);
+
+    assert.ok({}.toString());
+  });
 });
