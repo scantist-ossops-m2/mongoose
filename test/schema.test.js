@@ -2506,4 +2506,14 @@ describe('schema', function() {
     const casted = schema.path('ids').cast([[]]);
     assert.equal(casted[0].$path(), 'ids.$');
   });
+
+  it('disallows setting special properties with `add()` or constructor (gh-12085)', async function() {
+    const maliciousPayload = '{"__proto__.toString": "Number"}';
+
+    assert.throws(() => {
+      mongoose.Schema(JSON.parse(maliciousPayload));
+    }, /__proto__/);
+
+    assert.ok({}.toString());
+  });
 });
